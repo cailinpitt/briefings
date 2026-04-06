@@ -3,6 +3,7 @@ require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") }
 const { Printer } = require("../printer");
 const { getTransitStats, getCalendarMonthStats } = require("./data");
 const { printBriefing } = require("./print-briefing");
+const { sendWeeklyWrapped } = require("./wrapped-email");
 
 async function main() {
   const testMode = process.argv.includes("--test");
@@ -33,6 +34,12 @@ async function main() {
   printer.init();
   await printBriefing(printer, data, options);
   printer.flush();
+
+  try {
+    await sendWeeklyWrapped();
+  } catch (err) {
+    console.error("Wrapped email failed:", err.message);
+  }
 
   console.log("Done.");
 }

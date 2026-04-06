@@ -310,7 +310,9 @@ npm run lastfm:monthly:test  # ASCII output to terminal
 
 Prints a weekly or monthly Ventra/CTA transit summary: total rides with period-over-period comparison, rail vs bus split, top lines and routes, and highlights like your most-visited station, busiest day, and peak hour.
 
-Reads from the `ventra_transactions.json` file produced by [cta-wrapped](https://github.com/cailinpitt/cta-wrapped). No API calls — all stats are computed locally from the JSON.
+After printing, also generates and emails 6 CTA Wrapped images (Instagram Stories format) for the period using [cta-wrapped](https://github.com/cailinpitt/cta-wrapped). The weekly run emails the current week's wrapped; the monthly run emails last month's wrapped.
+
+Reads from the `ventra_transactions.json` file produced by cta-wrapped. No API calls — all stats are computed locally from the JSON.
 
 ### Setup
 
@@ -321,13 +323,22 @@ Set `VENTRA_DATA_PATH` in `.env` to the path of your `ventra_transactions.json`.
 VENTRA_DATA_PATH=/path/to/ventra_transactions.json
 ```
 
+Email credentials for the wrapped images are read from `~/Development/cta-wrapped/keys.js` (the same `email` config used by cta-wrapped's fetch script). No extra configuration needed if cta-wrapped is already set up.
+
+### Cron
+
+```
+0 14 * * 0    node transit-briefing/index.js    # weekly, every Sunday at 2pm
+15 14 1 * *   node transit-briefing/monthly.js  # monthly, 1st of month at 2:15pm
+```
+
 ### Run
 
 ```
-npm run transit:weekly        # print weekly report (last 7 days)
-npm run transit:weekly:test   # ASCII output to terminal
-npm run transit:monthly       # print monthly report (last 30 days)
-npm run transit:monthly:test  # ASCII output to terminal
+npm run transit:weekly        # print weekly report + send weekly wrapped email
+npm run transit:weekly:test   # ASCII output to terminal (still sends wrapped email)
+npm run transit:monthly       # print monthly report + send monthly wrapped email
+npm run transit:monthly:test  # ASCII output to terminal (still sends wrapped email)
 ```
 
 ### Example output
