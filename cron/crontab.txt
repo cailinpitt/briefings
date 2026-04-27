@@ -1,0 +1,24 @@
+# briefings crontab — source of truth.
+# Append between # BRIEFINGS-START / # BRIEFINGS-END markers in the live
+# crontab. Don't `crontab cron/crontab.txt` directly — that wipes any
+# other unrelated jobs.
+
+B=/home/cailin/Development/briefings
+
+# BRIEFINGS-START
+
+# Morning briefing — daily at 8am.
+0 8  * * *   cd $B && npm run morning >> morning-briefings-cron.log 2>&1
+
+# Strava briefing — hourly (only prints when there's a new activity).
+0 *  * * *   cd $B && npm run strava  >> strava-briefings-cron.log 2>&1
+
+# Last.fm — weekly Sunday 10am, monthly 1st of month at 10am.
+0 10 * * 0   cd $B && npm run lastfm:weekly  >> lastfm-briefings-cron.log 2>&1
+0 10 1 * *   cd $B && npm run lastfm:monthly >> lastfm-briefings-cron.log 2>&1
+
+# Transit — weekly Sunday 2pm, monthly 1st of month at 2:15pm.
+0 14 * * 0   cd $B && npm run transit:weekly  >> transit-briefings-cron.log 2>&1
+15 14 1 * *  cd $B && npm run transit:monthly >> transit-briefings-cron.log 2>&1
+
+# BRIEFINGS-END
